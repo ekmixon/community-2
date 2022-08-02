@@ -39,13 +39,9 @@ class NetworkHTTPPOST(Signature):
             ]
 
         for http in getattr(self, "get_net_http_ex", lambda: [])():
-            is_safelisted = False
-            for safelisted in safelist:
-                if safelisted in http["host"]:
-                    is_safelisted = True
-
+            is_safelisted = any(safelisted in http["host"] for safelisted in safelist)
             if not is_safelisted and http["method"] == "POST":
-                request = "%s %s://%s%s" % (http["method"], http["protocol"], http["host"], http["uri"])
+                request = f'{http["method"]} {http["protocol"]}://{http["host"]}{http["uri"]}'
                 self.mark_ioc("request", request)
 
         return self.has_marks()
@@ -71,31 +67,32 @@ class NetworkCnCHTTP(Signature):
         suspectrequests = []
 
         for http in getattr(self, "get_net_http_ex", lambda: [])():
-            is_safelisted = False
-            for safelisted in safelist:
-                if safelisted in http["host"]:
-                    is_safelisted = True
-
+            is_safelisted = any(safelisted in http["host"] for safelisted in safelist)
             # Check HTTP features
             reasons = []
             ip = re.compile("^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")
-            if not is_safelisted and http["method"] == "POST" and "Referer:" not in http["request"]:
-                reasons.append("POST method with no referer header")
+            if not is_safelisted:
+                if http["method"] == "POST":
+                    if "Referer:" not in http["request"]:
+                        reasons.append("POST method with no referer header")
 
-            if not is_safelisted and http["method"] == "POST" and "User-Agent:" not in http["request"]:
-                reasons.append("POST method with no useragent header")
+                    if "User-Agent:" not in http["request"]:
+                        reasons.append("POST method with no useragent header")
 
-            if not is_safelisted and http["method"] == "GET" and "User-Agent:" not in http["request"]:
-                reasons.append("GET method with no useragent header")
+                if (
+                    http["method"] == "GET"
+                    and "User-Agent:" not in http["request"]
+                ):
+                    reasons.append("GET method with no useragent header")
 
-            if not is_safelisted and "HTTP/1.0" in http["request"]:
-                reasons.append("HTTP version 1.0 used")
+                if "HTTP/1.0" in http["request"]:
+                    reasons.append("HTTP version 1.0 used")
 
-            if not is_safelisted and ip.match(http["host"]):
-                reasons.append("Connection to IP address")
+                if ip.match(http["host"]):
+                    reasons.append("Connection to IP address")
 
-            if len(reasons) > 0:
-                request = "%s %s://%s%s" % (http["method"], http["protocol"], http["host"], http["uri"])
+            if reasons:
+                request = f'{http["method"]} {http["protocol"]}://{http["host"]}{http["uri"]}'
                 if request not in suspectrequests:
                     features = ', '.join(reasons)
                     suspectrequests.append(request)

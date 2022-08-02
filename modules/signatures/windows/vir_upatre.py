@@ -33,13 +33,11 @@ class Upatre(Signature):
 
     def on_complete(self):
         for indicator in self.mutexes_re:
-            mutex = self.check_mutex(pattern=indicator, regex=True)
-            if mutex:
+            if mutex := self.check_mutex(pattern=indicator, regex=True):
                 self.mark_ioc("mutex", mutex)
 
         for indicator in self.files_re:
-            regkey = self.check_file(pattern=indicator, regex=True)
-            if regkey:
+            if regkey := self.check_file(pattern=indicator, regex=True):
                 self.mark_ioc("file", regkey)
 
         return self.has_marks()

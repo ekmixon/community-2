@@ -47,8 +47,7 @@ class Tor(Signature):
 
     def on_complete(self):
         for indicator in self.indicators:
-            filepath = self.check_file(pattern=indicator, regex=True)
-            if filepath:
+            if filepath := self.check_file(pattern=indicator, regex=True):
                 self.mark_ioc("file", filepath)
 
         return self.has_marks()

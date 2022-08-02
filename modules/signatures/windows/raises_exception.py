@@ -85,22 +85,19 @@ class ApplicationExceptionCrash(Signature):
         call["raw"] = "stacktrace",
         if isinstance(call["arguments"]["stacktrace"], (tuple, list)):
             call["arguments"]["stacktrace"] = \
-                "\n".join(call["arguments"]["stacktrace"])
+                    "\n".join(call["arguments"]["stacktrace"])
 
         exception_code = call["arguments"]["exception"]["exception_code"]
         if exception_code in self.exception_codes:
             self.severity = 5
             self.description = self.exception_codes[exception_code]
-        else:
-            # There's no point in keeping track of the API call for the
-            # exception documented above.
-            if process["process_name"].lower() in self.programs:
-                self.mark_ioc(
-                    "Application Crash",
-                    "Process %s with pid %s crashed" % (process["process_name"],
-                                                               process["pid"])
-                )
-                self.mark_call()
+        elif process["process_name"].lower() in self.programs:
+            self.mark_ioc(
+                "Application Crash",
+                f'Process {process["process_name"]} with pid {process["pid"]} crashed',
+            )
+
+            self.mark_call()
 
     def on_complete(self):
         return self.has_marks()

@@ -25,13 +25,11 @@ class LocatesBrowser(Signature):
 
     def on_complete(self):
         for indicator in self.files_re:
-            filepath = self.check_file(pattern=indicator, regex=True)
-            if filepath:
+            if filepath := self.check_file(pattern=indicator, regex=True):
                 self.mark_ioc("file", filepath)
 
         for indicator in self.regkeys_re:
-            regkey = self.check_key(pattern=indicator, regex=True)
-            if regkey:
+            if regkey := self.check_key(pattern=indicator, regex=True):
                 self.mark_ioc("registry", regkey)
 
         return self.has_marks()

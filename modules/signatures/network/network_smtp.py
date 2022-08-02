@@ -37,7 +37,4 @@ class NetworkSMTP(Signature):
                     password=s["req"]["password"]
                 )
 
-        if not self.has_marks():
-            return len(self.get_net_smtp()) > 0
-        else:
-            return True
+        return True if self.has_marks() else len(self.get_net_smtp()) > 0

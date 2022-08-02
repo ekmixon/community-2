@@ -28,8 +28,7 @@ class BypassFirewall(Signature):
     indicator = ".*\\\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\SharedAccess\\\\Parameters\\\\FirewallPolicy\\\\.*"
 
     def on_complete(self):
-        regkey = self.check_key(pattern=self.indicator, regex=True)
-        if regkey:
+        if regkey := self.check_key(pattern=self.indicator, regex=True):
             self.mark_ioc("registry", regkey)
             return True
 

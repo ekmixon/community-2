@@ -55,12 +55,12 @@ class InjectionNetworkTraffic(Signature):
             elif "hostname" in call["arguments"]:
                 host = call["arguments"]["hostname"]
 
-            if host != "":
-                if not host.startswith(("127.", "10.", "172.16.", "192.168.")):
-                    if pname not in self.pname:
-                        self.pname.append(pname)
-                    self.mark_call()
-            else:
+            if host == "":
+                if pname not in self.pname:
+                    self.pname.append(pname)
+                self.mark_call()
+
+            elif not host.startswith(("127.", "10.", "172.16.", "192.168.")):
                 if pname not in self.pname:
                     self.pname.append(pname)
                 self.mark_call()
@@ -71,6 +71,9 @@ class InjectionNetworkTraffic(Signature):
             for pname in self.pname:
                 self.description += pname
         elif len(self.pname) > 1:
-            self.description = "Network communications indicative of possible code injection originated from the processes "
-            self.description += ", ".join(self.pname)
+            self.description = (
+                "Network communications indicative of possible code injection originated from the processes "
+                + ", ".join(self.pname)
+            )
+
         return self.has_marks()

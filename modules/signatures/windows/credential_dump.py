@@ -32,21 +32,27 @@ class CredentialDumpingLsass(Signature):
     filter_apinames = "Process32NextW", "NtOpenProcess", "ReadProcessMemory",
 
     def on_call(self, call, process):
-        if call["api"] == "Process32NextW":
-            if call["arguments"]["process_name"] == "lsass.exe":
-                self.lsasspid.append(call["arguments"]["process_identifier"])
-                self.mark_call()
+        if (
+            call["api"] == "Process32NextW"
+            and call["arguments"]["process_name"] == "lsass.exe"
+        ):
+            self.lsasspid.append(call["arguments"]["process_identifier"])
+            self.mark_call()
 
-        if call["api"] == "NtOpenProcess":
-            if call["arguments"]["process_identifier"] in self.lsasspid:
-                if call["arguments"]["desired_access"] in ["0x00001010", "0x00001038"]:
-                    self.lsasshandle.append(call["arguments"]["process_handle"])
-                    self.mark_call()
+        if (
+            call["api"] == "NtOpenProcess"
+            and call["arguments"]["process_identifier"] in self.lsasspid
+            and call["arguments"]["desired_access"] in ["0x00001010", "0x00001038"]
+        ):
+            self.lsasshandle.append(call["arguments"]["process_handle"])
+            self.mark_call()
 
-        if call["api"] == "ReadProcessMemory":
-            if call["arguments"]["process_handle"] in self.lsasshandle:
-                self.creddump = True
-                self.mark_call()
+        if (
+            call["api"] == "ReadProcessMemory"
+            and call["arguments"]["process_handle"] in self.lsasshandle
+        ):
+            self.creddump = True
+            self.mark_call()
 
     def on_complete(self):
          if self.creddump:
@@ -68,16 +74,20 @@ class CredentialDumpingLsassAccess(Signature):
     filter_apinames = "NtOpenProcess", "Process32NextW",
 
     def on_call(self, call, process):
-        if call["api"] == "Process32NextW":
-            if call["arguments"]["process_name"] == "lsass.exe":
-                self.lsasspid.append(call["arguments"]["process_identifier"])
-                self.mark_call()
+        if (
+            call["api"] == "Process32NextW"
+            and call["arguments"]["process_name"] == "lsass.exe"
+        ):
+            self.lsasspid.append(call["arguments"]["process_identifier"])
+            self.mark_call()
 
-        if call["api"] == "NtOpenProcess":
-            if call["arguments"]["process_identifier"] in self.lsasspid:
-                if call["arguments"]["desired_access"] in ["0x00001010", "0x00001038"]:
-                    self.creddump = True
-                    self.mark_call()
+        if (
+            call["api"] == "NtOpenProcess"
+            and call["arguments"]["process_identifier"] in self.lsasspid
+            and call["arguments"]["desired_access"] in ["0x00001010", "0x00001038"]
+        ):
+            self.creddump = True
+            self.mark_call()
 
     def on_complete(self):
          if self.creddump:

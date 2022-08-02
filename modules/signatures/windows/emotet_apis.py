@@ -47,10 +47,7 @@ class Emotet_APIs(Signature):
             if "[System Process]" in buf:
                 for compname in self.compname:
                     if compname in buf:
-                        count = 0
-                        for proc in self.processlist:
-                            if proc in buf:
-                                count += 1
+                        count = sum(proc in buf for proc in self.processlist)
                         if count > 5:
                             self.mark_call()
 

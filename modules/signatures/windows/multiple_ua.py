@@ -27,8 +27,8 @@ class Multiple_UA(Signature):
 
     def __init__(self, *args, **kwargs):
         Signature.__init__(self, *args, **kwargs)
-        self.useragents = list()
-        self.procs = list()
+        self.useragents = []
+        self.procs = []
 
     filter_analysistypes = set(["file"])
     filter_apinames = set(["InternetOpenA", "InternetOpenW"])
@@ -41,13 +41,12 @@ class Multiple_UA(Signature):
         }
         ua = call["arguments"]["user_agent"]
         proc = process["process_name"].lower()
-        if proc in safelist.keys() and ua in safelist[proc]:
+        if proc in safelist and ua in safelist[proc]:
             return None
 
-        else:
-            if ua not in self.useragents:
-                self.useragents.append(ua)
-                self.procs.append((process["process_name"], ua))
+        if ua not in self.useragents:
+            self.useragents.append(ua)
+            self.procs.append((process["process_name"], ua))
 
     def on_complete(self):
         if len(self.useragents) > 1:

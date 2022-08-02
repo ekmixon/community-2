@@ -20,8 +20,7 @@ class DelfTrojan(Signature):
 
     def on_complete(self):
         for indicator in self.mutexes_re:
-            match = self.check_mutex(pattern=indicator, regex=True)
-            if match:
+            if match := self.check_mutex(pattern=indicator, regex=True):
                 self.mark_ioc("mutex", match)
 
         return self.has_marks()

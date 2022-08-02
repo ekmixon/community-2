@@ -32,8 +32,10 @@ class NetworkHTTP(Signature):
             if http["host"] in self.host_safelist:
                 continue
 
-            self.mark_ioc("request", "%s %s://%s%s" % (
-                http["method"], http["protocol"], http["host"], http["uri"],
-            ))
+            self.mark_ioc(
+                "request",
+                f'{http["method"]} {http["protocol"]}://{http["host"]}{http["uri"]}',
+            )
+
 
         return self.has_marks()

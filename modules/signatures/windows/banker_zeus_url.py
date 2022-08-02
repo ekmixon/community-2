@@ -38,6 +38,5 @@ class ZeusURL(Signature):
 
     def on_complete(self):
         for indicator in self.indicators:
-            url = self.check_url(pattern=indicator, regex=True)
-            if url:
+            if url := self.check_url(pattern=indicator, regex=True):
                 self.mark_ioc("url", url)

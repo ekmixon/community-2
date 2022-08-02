@@ -20,8 +20,7 @@ class Flystudio(Signature):
 
     def on_complete(self):
         for indicator in self.regkeys_re:
-            match = self.check_key(pattern=indicator, regex=True)
-            if match:
+            if match := self.check_key(pattern=indicator, regex=True):
                 self.mark_ioc("regkey", match)
 
         return self.has_marks()

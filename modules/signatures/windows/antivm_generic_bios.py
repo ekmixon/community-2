@@ -30,8 +30,7 @@ class AntiVMBios(Signature):
 
     def on_complete(self):
         for indicator in self.regkeys_re:
-            regkey = self.check_key(pattern=indicator, regex=True)
-            if regkey:
+            if regkey := self.check_key(pattern=indicator, regex=True):
                 self.mark_ioc("registry", regkey)
 
         return self.has_marks()

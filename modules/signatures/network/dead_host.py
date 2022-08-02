@@ -22,12 +22,10 @@ class DeadHost(Signature):
     def on_complete(self):
         for ip, port in self.get_results("network", {}).get("dead_hosts", []):
             if ip not in self.safelist:
-                self.mark_ioc("dead_host", "%s:%s" % (ip, port))
+                self.mark_ioc("dead_host", f"{ip}:{port}")
                 self.severity += 2
 
-        if self.severity > 8:
-            self.severity = 8
-
+        self.severity = min(self.severity, 8)
         if self.has_marks(2):
             self.description = (
                 "Connects to IP addresses that are no longer responding to "

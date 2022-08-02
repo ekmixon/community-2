@@ -45,9 +45,8 @@ class DisablesSPDYIE(Signature):
         key = call['arguments'].get('regkey_r', '').lower()
         if key == '':
             key = call['arguments']['regkey'].split('\\')[-1]
-        if key:
-            if key == "enablespdy3_0" and call["arguments"]["value"] == 0:
-                self.mark_call()
+        if key and key == "enablespdy3_0" and call["arguments"]["value"] == 0:
+            self.mark_call()
 
     def on_complete(self):
         return self.has_marks()
@@ -83,8 +82,7 @@ class ModifiesFirefoxConfiguration(Signature):
 
     def on_call(self, call, process):
         if process["process_name"] != "firefox.exe":
-            key = call["arguments"]["filepath"].lower()
-            if key:
+            if key := call["arguments"]["filepath"].lower():
                 if "\\mozilla\\firefox\\profiles\\" in key and  key.endswith("prefs.js"):
                     self.mark_call()
 

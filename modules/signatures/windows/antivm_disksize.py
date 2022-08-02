@@ -48,12 +48,13 @@ class AntiVMDiskSize(Signature):
     ]
 
     def on_call(self, call, process):
-        if process["process_name"].lower() not in self.safelistprocs:
-            if call["api"] == "DeviceIoControl":
-                if call["arguments"]["control_code"] == 475228:
-                    self.mark_call()
-            elif call["api"].startswith("GetDiskFreeSpace"):
-                self.mark_call()
+        if process["process_name"].lower() not in self.safelistprocs and (
+            call["api"] == "DeviceIoControl"
+            and call["arguments"]["control_code"] == 475228
+            or call["api"] != "DeviceIoControl"
+            and call["api"].startswith("GetDiskFreeSpace")
+        ):
+            self.mark_call()
 
     def on_complete(self):
         return self.has_marks()

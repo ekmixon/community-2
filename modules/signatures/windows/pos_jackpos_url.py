@@ -21,8 +21,7 @@ class JackposURL(Signature):
 
     def on_complete(self):
         for indicator in self.urls_re:
-            match = self.check_url(pattern=indicator, regex=True)
-            if match:
+            if match := self.check_url(pattern=indicator, regex=True):
                 self.mark_ioc("url", indicator)
 
         return self.has_marks()

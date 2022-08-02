@@ -20,8 +20,7 @@ class Psyokym(Signature):
 
     def on_complete(self):
         for indicator in self.files_re:
-            regkey = self.check_file(pattern=indicator, regex=True)
-            if regkey:
+            if regkey := self.check_file(pattern=indicator, regex=True):
                 self.mark_ioc("file", regkey)
 
         return self.has_marks()

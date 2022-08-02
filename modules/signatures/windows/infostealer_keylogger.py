@@ -27,7 +27,9 @@ class Keylogger(Signature):
     filter_apinames = "SetWindowsHookExA", "SetWindowsHookExW"
 
     def on_call(self, call, process):
-        if call["arguments"]["hook_identifier"] in [2, 13]:
-            if not call["arguments"]["thread_identifier"]:
-                self.mark_call()
-                return True
+        if (
+            call["arguments"]["hook_identifier"] in [2, 13]
+            and not call["arguments"]["thread_identifier"]
+        ):
+            self.mark_call()
+            return True

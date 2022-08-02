@@ -38,8 +38,8 @@ class Dridex_APIs(Signature):
         self.crypted = []
         # Set to false if you don't want to extract c2 IPs
         self.extract = True
-        self.sockmon = dict()
-        self.payloadip = dict()
+        self.sockmon = {}
+        self.payloadip = {}
         self.decompMZ = False
         self.ip_check = str()
         self.port_check = str()
@@ -62,14 +62,12 @@ class Dridex_APIs(Signature):
             # pattern observed with all Dridex varients 08/14 - 03/15 so far.
             testkey = call["arguments"]["regkey"].lower()
             if testkey == "hkey_local_machine\\system\\controlset001\\control\\computername\\computername\\computername":
-                buf = call["arguments"]["value"]
-                if buf:
+                if buf := call["arguments"]["value"]:
                     self.compname = buf.lower()
                     self.mark_call()
             if testkey == "hkey_current_user\\volatile environment\\username":
                 if call["status"]:
-                    buf = call["arguments"]["value"]
-                    if buf:
+                    if buf := call["arguments"]["value"]:
                         self.username = buf.lower()
                         self.mark_call()
                 else:
@@ -88,14 +86,14 @@ class Dridex_APIs(Signature):
             if not self.extract:
                 return None
 
-            if not "socket" in call["arguments"]:
+            if "socket" not in call["arguments"]:
                 return None
 
             socknum = str(call["arguments"]["socket"])
             if socknum and socknum not in self.sockmon.keys():
                 self.sockmon[socknum] = ""
 
-            if not "ip" in call["arguments"]:
+            if "ip" not in call["arguments"]:
                 return None
             lastip = call["arguments"]["ip"]
             self.sockmon[socknum] = lastip
@@ -104,7 +102,7 @@ class Dridex_APIs(Signature):
             if not self.extract:
                 return None
 
-            if not "socket" in call["arguments"]:
+            if "socket" not in call["arguments"]:
                 return None
 
             socknum = str(call["arguments"]["socket"])
@@ -119,25 +117,26 @@ class Dridex_APIs(Signature):
             if not self.extract:
                 return None
 
-            if not "socket" in call["arguments"]:
+            if "socket" not in call["arguments"]:
                 return None
 
             socknum = str(call["arguments"]["socket"])
             if socknum and socknum in self.sockmon.keys() and "buffer" in call["arguments"]:
-                buf = call["arguments"]["buffer"]
-                if buf:
-                    clen = re.search(r"Content-Length:\s([^\s]+)", buf)
-                    if clen:
+                if buf := call["arguments"]["buffer"]:
+                    if clen := re.search(r"Content-Length:\s([^\s]+)", buf):
                         length = int(clen.group(1))
-                        if length > 100000:
-                            if "send" in self.payloadip and self.sockmon[socknum] == self.payloadip["send"]:
-                                # Just a sanity check to make sure the IP hasn't changed
-                                # since this is a primitive send/recv monitor
-                                self.payloadip["recv"] = self.sockmon[socknum]
-                                self.mark_call()
+                        if (
+                            length > 100000
+                            and "send" in self.payloadip
+                            and self.sockmon[socknum] == self.payloadip["send"]
+                        ):
+                            # Just a sanity check to make sure the IP hasn't changed
+                            # since this is a primitive send/recv monitor
+                            self.payloadip["recv"] = self.sockmon[socknum]
+                            self.mark_call()
 
         elif call["api"] == "RtlDecompressBuffer":
-            if not "uncompressed_buffer" in call["arguments"]:
+            if "uncompressed_buffer" not in call["arguments"]:
                 return None
 
             buf = call["arguments"]["uncompressed_buffer"]
@@ -146,7 +145,10 @@ class Dridex_APIs(Signature):
                 self.mark_call()
 
         elif call["api"] == "InternetConnectW":
-            if not "hostname" in call["arguments"] or not "port" in call["arguments"]:
+            if (
+                "hostname" not in call["arguments"]
+                or "port" not in call["arguments"]
+            ):
                 return None
 
             if self.decompMZ:
@@ -159,7 +161,7 @@ class Dridex_APIs(Signature):
                 self.mark_call()
 
         elif call["api"] == "HttpOpenRequestW":
-            if not "http_method" in call["arguments"]:
+            if "http_method" not in call["arguments"]:
                 return None
 
             if self.ip_check and self.port_check:
@@ -169,15 +171,18 @@ class Dridex_APIs(Signature):
                 self.mark_call()
 
         elif call["api"] == "InternetCrackUrlA":
-            if not "url" in call["arguments"]:
+            if "url" not in call["arguments"]:
                 return None
 
             if self.post_check:
                 buf = call["arguments"]["url"]
-                if buf.lower().startswith("https") and self.port_check != "443":
-                    if buf.lower().split("/")[-1] == self.ip_check:
-                        self.isdridex = True
-                        self.mark_call()
+                if (
+                    buf.lower().startswith("https")
+                    and self.port_check != "443"
+                    and buf.lower().split("/")[-1] == self.ip_check
+                ):
+                    self.isdridex = True
+                    self.mark_call()
             elif self.cncstart:
                 self.mark_call()
 

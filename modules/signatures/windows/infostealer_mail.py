@@ -62,8 +62,7 @@ class MailStealer(Signature):
                 self.mark_ioc("file", filepath)
 
         for indicator in self.regkeys_re:
-            registry = self.check_key(pattern=indicator, regex=True)
-            if registry:
+            if registry := self.check_key(pattern=indicator, regex=True):
                 self.mark_ioc("registry", registry)
 
         return self.has_marks()

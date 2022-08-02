@@ -25,11 +25,11 @@ class CreatesService(Signature):
 
     def on_call(self, call, process):
         service_name = (call["arguments"].get("service_name") or "").lower()
-        if call["api"] == "CreateServiceA" or call["api"] == "CreateServiceW":
+        if call["api"] in ["CreateServiceA", "CreateServiceW"]:
             self.services.append(service_name)
             self.mark_call()
 
-        elif call["api"] == "StartServiceA" or call["api"] == "StartServiceW":
+        elif call["api"] in ["StartServiceA", "StartServiceW"]:
             self.startedservices.append(service_name)
 
     def on_complete(self):

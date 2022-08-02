@@ -30,13 +30,11 @@ class NetworkDNSTXTLookup(Signature):
 
     def on_complete(self):
         for dns in self.get_results("network", {}).get("dns", []):
-            is_safelisted = False
-            for safelisted in self.safelist:
-                if safelisted in dns["request"]:
-                    is_safelisted = True
+            is_safelisted = any(
+                safelisted in dns["request"] for safelisted in self.safelist
+            )
 
-            if not is_safelisted:
-                if dns["type"] == "TXT":
-                    self.mark_ioc("domain", dns["request"])
+            if not is_safelisted and dns["type"] == "TXT":
+                self.mark_ioc("domain", dns["request"])
 
         return self.has_marks()

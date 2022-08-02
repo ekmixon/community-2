@@ -27,7 +27,7 @@ class PersistenceBootexecute(Signature):
 
     def __init__(self, *args, **kwargs):
         Signature.__init__(self, *args, **kwargs)
-        self.registry_writes = dict()
+        self.registry_writes = {}
         self.found_bootexecute = False
 
     filter_apinames = set(["RegSetValueExA", "RegSetValueExW", "NtSetValueKey"])
@@ -38,8 +38,12 @@ class PersistenceBootexecute(Signature):
             self.registry_writes[fullname] = call["arguments"]["value"]
 
     def on_complete(self):
-        match_key = self.check_key(pattern=".*\\\\SYSTEM\\\\(CurrentControlSet|ControlSet001)\\\\Control\\\\Session\\ Manager\\\\(BootExecute|SetupExecute|Execute|S0InitialCommand)", regex=True, actions=["regkey_written"], all=True)
-        if match_key:
+        if match_key := self.check_key(
+            pattern=".*\\\\SYSTEM\\\\(CurrentControlSet|ControlSet001)\\\\Control\\\\Session\\ Manager\\\\(BootExecute|SetupExecute|Execute|S0InitialCommand)",
+            regex=True,
+            actions=["regkey_written"],
+            all=True,
+        ):
             self.found_bootexecute = True
             for match in match_key:
                 data = self.registry_writes.get(match, "unknown")

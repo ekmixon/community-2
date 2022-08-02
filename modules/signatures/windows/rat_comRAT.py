@@ -65,15 +65,16 @@ class ComRAT(Signature):
                         self.move_count += 1
                         self.mark_call()
 
-        if call["api"] == "CreateProcessInternalW":
-            # start rundll32.exe Install?
-            if "rundll32.exe" in call["arguments"]["command_line"] and \
-                    "Install" in call["arguments"]["command_line"]:
-                self.created_process = True
-                self.mark_call()
+        if (
+            call["api"] == "CreateProcessInternalW"
+            and "rundll32.exe" in call["arguments"]["command_line"]
+            and "Install" in call["arguments"]["command_line"]
+        ):
+            self.created_process = True
+            self.mark_call()
 
         if call["api"] == "NtWriteFile" and \
-                call["arguments"]["buffer"][:2] == "MZ":
+                    call["arguments"]["buffer"][:2] == "MZ":
             self.wrote_pe_file = True
             self.mark_call()
 

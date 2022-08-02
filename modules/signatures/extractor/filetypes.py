@@ -12,4 +12,4 @@ class LnkHeader(Extractor):
     def handle_yara(self, filepath, match):
         lnk = LnkShortcut(filepath).run()
         self.enhance(filepath, "lnk", lnk)
-        self.push_command_line("%s %s" % (lnk["basepath"], lnk["cmdline"]))
+        self.push_command_line(f'{lnk["basepath"]} {lnk["cmdline"]}')

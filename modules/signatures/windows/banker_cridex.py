@@ -62,8 +62,7 @@ class Cridex(Signature):
             return
 
         for indicator in self.indicators:
-            match_mutex = self.check_mutex(pattern=indicator, regex=True)
-            if match_mutex:
+            if match_mutex := self.check_mutex(pattern=indicator, regex=True):
                 self.mark_ioc("mutex", match_mutex)
 
         return self.has_marks(3)

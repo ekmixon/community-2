@@ -50,7 +50,10 @@ class DiskInformation(Signature):
                 self.drive_opened = True
                 self.mark_call()
 
-        if call["api"] in ["DeviceIoControl", "NtDeviceIoControlFile"]:
-            if self.drive_opened and call["arguments"]["control_code"] in self.ioctls:
-                self.mark_call()
-                return True
+        if (
+            call["api"] in ["DeviceIoControl", "NtDeviceIoControlFile"]
+            and self.drive_opened
+            and call["arguments"]["control_code"] in self.ioctls
+        ):
+            self.mark_call()
+            return True

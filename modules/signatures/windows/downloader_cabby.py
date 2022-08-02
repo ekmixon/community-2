@@ -30,18 +30,17 @@ class DownloaderCabby(Signature):
     ]
 
     def on_complete(self):
-        match_mutex = self.check_mutex(pattern=".*[0-9]{8}", regex=True)
-        if match_mutex:
+        if match_mutex := self.check_mutex(pattern=".*[0-9]{8}", regex=True):
             self.mark_ioc("mutex", match_mutex)
 
-        match_cab_file = self.check_file(pattern=".*\\\\Temp\\\\temp_cab_[0-9]*\.cab", regex=True)
-        if match_cab_file:
+        if match_cab_file := self.check_file(
+            pattern=".*\\\\Temp\\\\temp_cab_[0-9]*\.cab", regex=True
+        ):
             self.mark_ioc("file", match_cab_file)
 
-        # TODO Does this really belong to the sample or is this just a generic
-        # Windows 7 thing?
-        match_connectivity_check = self.check_domain(pattern="windowsupdate.microsoft.com")
-        if match_connectivity_check:
+        if match_connectivity_check := self.check_domain(
+            pattern="windowsupdate.microsoft.com"
+        ):
             self.mark_ioc("url", match_connectivity_check)
 
         return self.has_marks(3)

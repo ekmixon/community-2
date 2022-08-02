@@ -59,8 +59,7 @@ class Dns_Freehosting_Domain(Signature):
 
     def on_complete(self):
         for indicator in self.domains_re:
-            match = self.check_domain(pattern=indicator, regex=True)
-            if match:
+            if match := self.check_domain(pattern=indicator, regex=True):
                 self.mark_ioc("domain", match)
 
         return self.has_marks()

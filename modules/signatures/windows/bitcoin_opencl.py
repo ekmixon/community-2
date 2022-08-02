@@ -24,7 +24,6 @@ class BitcoinOpenCL(Signature):
     minimum = "2.0"
 
     def on_complete(self):
-        filepath = self.check_file(pattern=".*OpenCL\.dll$", regex=True)
-        if filepath:
+        if filepath := self.check_file(pattern=".*OpenCL\.dll$", regex=True):
             self.mark_ioc("file", filepath)
             return True

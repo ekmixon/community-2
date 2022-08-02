@@ -22,34 +22,40 @@ class SuspiciousPowershell(Signature):
                 continue
 
             epre = re.compile("\-[e^]{1,2}[xecution]*[p^]{0,2}[olicy]*[\s]+bypass")
-            m = epre.search(lower)
-            if m:
-                self.mark(value="Attempts to bypass execution policy", option=m.group(0))
+            if m := epre.search(lower):
+                self.mark(value="Attempts to bypass execution policy", option=m[0])
 
             epre = re.compile("\-[e^]{1,2}[xecution]*[p^]{0,2}[olicy]*[\s]+unrestricted")
-            m = epre.search(lower)
-            if m:
-                self.mark(value="Attempts to bypass execution policy", option=m.group(0))
+            if m := epre.search(lower):
+                self.mark(value="Attempts to bypass execution policy", option=m[0])
 
             nopre = re.compile("\-nop[rofile]*")
-            m = nopre.search(lower)
-            if m:
-                self.mark(value="Does not load current user profile", option=m.group(0))
+            if m := nopre.search(lower):
+                self.mark(value="Does not load current user profile", option=m[0])
 
             nolre = re.compile("\-nol[og]*")
-            m = nolre.search(lower)
-            if m:
-                self.mark(value="Hides the copyright banner when PowerShell launches", option=m.group(0))
+            if m := nolre.search(lower):
+                self.mark(
+                    value="Hides the copyright banner when PowerShell launches",
+                    option=m[0],
+                )
+
 
             hiddenre = re.compile("\-[w^]{1,2}[indowstyle^]*[\s]+hidden")
-            m = hiddenre.search(lower)
-            if m:
-                self.mark(value="Attempts to execute command with a hidden window", option=m.group(0))
+            if m := hiddenre.search(lower):
+                self.mark(
+                    value="Attempts to execute command with a hidden window",
+                    option=m[0],
+                )
+
 
             nonire = re.compile("\-noni[nteraciv]*")
-            m = nonire.search(lower)
-            if m:
-                self.mark(value="Prevents creating an interactive prompt for the user", option=m.group(0))
+            if m := nonire.search(lower):
+                self.mark(
+                    value="Prevents creating an interactive prompt for the user",
+                    option=m[0],
+                )
+
 
             if "downloadfile(" in lower:
                 self.mark(value="Uses powershell to execute a file download from the command line")
@@ -115,11 +121,14 @@ class PowershellDdiRc4(Signature):
         if '"' in key:
             key = key.split('"')[1]
 
-        self.mark_config({
-            "family": "Powershell DDI RC4 (downloader)",
-            "url": "%s%s" % (host, path),
-            "key": key,
-        })
+        self.mark_config(
+            {
+                "family": "Powershell DDI RC4 (downloader)",
+                "url": f"{host}{path}",
+                "key": key,
+            }
+        )
+
         return True
 
 class PowershellDFSP(Signature):
@@ -231,11 +240,14 @@ class PowershellMeterpreter(Signature):
         port = match.string("Port", 0).split()[1]
         package = match.string("Package", 0)
 
-        self.mark_config({
-            "family": "Powershell Meterpreter",
-            "url": "tcp://%s:%s" % (host, port),
-            "type": package,
-        })
+        self.mark_config(
+            {
+                "family": "Powershell Meterpreter",
+                "url": f"tcp://{host}:{port}",
+                "type": package,
+            }
+        )
+
         return True
 
 class PowershellRequest(Signature):

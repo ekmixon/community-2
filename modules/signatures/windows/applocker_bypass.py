@@ -20,7 +20,7 @@ class AppLockerBypass(Signature):
             return
 
         args = shlex.split(match.string("cmdline"))
-        for idx, arg in enumerate(args):
+        for arg in args:
             if arg.startswith("/i:") and len(arg) != 3:
                 self.mark_config({
                     "family": "Powershell-based AppLocker Bypass",

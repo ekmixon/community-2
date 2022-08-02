@@ -30,8 +30,7 @@ class Adzok(Signature):
 
     def on_complete(self):
         for indicator in self.indicators:
-            match = self.check_file(pattern=indicator, regex=True)
-            if match:
+            if match := self.check_file(pattern=indicator, regex=True):
                 self.mark_ioc("file", match)
 
         return self.has_marks()

@@ -18,12 +18,10 @@ class Powerfun(Extractor):
             # Powerfun invokes a second-stage PS script
             # This script is b64encoded and gziped
             script = zlib.decompress(
-                arg.group(1).replace("'", "").decode("base64"),
-                16 + zlib.MAX_WBITS
+                arg[1].replace("'", "").decode("base64"), 16 + zlib.MAX_WBITS
             )
+
             # The shellcode in the script is also b64 encoded
             arg = base64regex.search(script)
-            if arg:
-                self.push_shellcode(
-                    arg.group(1).replace("'", "").decode("base64")
-                )
+        if arg:
+            self.push_shellcode(arg[1].replace("'", "").decode("base64"))

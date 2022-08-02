@@ -13,17 +13,14 @@ class AndroidGooglePlayDiff(Signature):
     minimum = "2.0"
 
     def on_complete(self):
-        apk_permission_list = []
-        for perm in self.get_apkinfo("manifest", {}).get("permissions", []):
-            apk_permission_list.append(perm["name"])
+        apk_permission_list = [
+            perm["name"]
+            for perm in self.get_apkinfo("manifest", {}).get("permissions", [])
+        ]
 
-        google_permission_list = []
-        for perm in self.get_googleplay("permissions", []):
-            google_permission_list.append(perm)
-
-        permission_diff = \
-            list(set(google_permission_list) - set(apk_permission_list))
-
-        if permission_diff:
+        google_permission_list = list(self.get_googleplay("permissions", []))
+        if permission_diff := list(
+            set(google_permission_list) - set(apk_permission_list)
+        ):
             self.mark(permissions=permission_diff)
             return True

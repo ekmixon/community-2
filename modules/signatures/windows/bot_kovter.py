@@ -18,8 +18,10 @@ class KovterBot(Signature):
     def on_complete(self):
         for http in getattr(self, "get_net_http_ex", lambda: [])():
             if re.match("/counter/\\?id=", http["uri"]):
-                self.mark_ioc("request", "%s %s://%s%s" % (
-                    http["method"], http["protocol"], http["host"], http["uri"],
-                ))
+                self.mark_ioc(
+                    "request",
+                    f'{http["method"]} {http["protocol"]}://{http["host"]}{http["uri"]}',
+                )
+
 
         return self.has_marks()

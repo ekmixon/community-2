@@ -24,7 +24,7 @@ class NoLookupCommunication(Signature):
                 if ans["data"] in hosts:
                     hosts.remove(ans["data"])
 
-        if len(hosts) > 0:
+        if hosts:
             for host in hosts:
                 if host not in self.get_net_generic("dns_servers"):
                     self.mark(host=host)

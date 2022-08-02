@@ -40,9 +40,9 @@ class InjectionWriteMemory(Signature):
             if not call_process or call_process["ppid"] != process["pid"]:
                 self.mark_ioc(
                     "Process injection",
-                    "Process %s injected into non-child %s" % (process["pid"],
-                                                               injected_pid)
+                    f'Process {process["pid"]} injected into non-child {injected_pid}',
                 )
+
             self.mark_call()
 
     def on_complete(self):
@@ -73,9 +73,9 @@ class InjectionWriteMemoryEXE(Signature):
             if not call_process or call_process["ppid"] != process["pid"]:
                 self.mark_ioc(
                     "Process injection",
-                    "Process %s injected into non-child %s" % (process["pid"],
-                                                               injected_pid)
+                    f'Process {process["pid"]} injected into non-child {injected_pid}',
                 )
+
             self.mark_call()
 
     def on_complete(self):

@@ -20,8 +20,7 @@ class LolBot(Signature):
     ]
 
     def on_complete(self):
-        for indicator in self.files_re:
-            if self.check_file(pattern=indicator, regex=True):
-                return True
-
-        return False
+        return any(
+            self.check_file(pattern=indicator, regex=True)
+            for indicator in self.files_re
+        )

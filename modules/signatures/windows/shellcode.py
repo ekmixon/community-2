@@ -25,11 +25,11 @@ class MetasploitShellcode(Signature):
             return
 
         for rule in match.yara:
-            if not hasattr(self, "extr_%s" % rule.name):
+            if not hasattr(self, f"extr_{rule.name}"):
                 continue
 
             self.sc = open(match.raw, "rb").read()
-            getattr(self, "extr_%s" % rule.name)(match, rule)
+            getattr(self, f"extr_{rule.name}")(match, rule)
 
     def extr_meterpreter_reverse_tcp_shellcode(self, match, rule):
         self.type_ = "meterpreter/reverse_tcp"
@@ -40,7 +40,7 @@ class MetasploitShellcode(Signature):
         lport = rule.meta["LPORT"]
         ip = socket.inet_ntoa(self.sc[lhost:lhost+4])
         port = struct.unpack(">H", self.sc[lport:lport+2])[0]
-        self.url = "tcp://%s:%s" % (ip, port)
+        self.url = f"tcp://{ip}:{port}"
 
     extr_meterpreter_reverse_tcp_shellcode_rev2 = (
         extr_meterpreter_reverse_tcp_shellcode_rev1
@@ -57,7 +57,7 @@ class MetasploitShellcode(Signature):
 
     def extr_meterpreter_reverse_tcp_shellcode_domain(self, match, rule):
         self.type_ = "meterpreter/reverse_tcp"
-        self.url = "tcp://%s" % rule.string("domain")
+        self.url = f'tcp://{rule.string("domain")}'
 
     def extr_metasploit_bind_shell(self, match, rule):
         self.type_ = "meterpreter/bind_shell"

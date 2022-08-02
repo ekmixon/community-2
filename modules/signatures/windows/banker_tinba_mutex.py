@@ -20,8 +20,7 @@ class TinbaMutexes(Signature):
     ]
 
     def on_complete(self):
-        for indicator in self.mutexes_re:
-            if self.check_mutex(pattern=indicator, regex=True):
-                return True
-
-        return False
+        return any(
+            self.check_mutex(pattern=indicator, regex=True)
+            for indicator in self.mutexes_re
+        )

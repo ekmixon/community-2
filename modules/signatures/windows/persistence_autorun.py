@@ -82,11 +82,11 @@ class Autorun(Signature):
     ]
 
     def on_call(self, call, process):
-        if call["api"] == "CreateServiceA" or call["api"] == "CreateServiceW":
+        if call["api"] in ["CreateServiceA", "CreateServiceW"]:
             starttype = call["arguments"]["start_type"]
-            servicename = call["arguments"]["service_name"]
-            servicepath = call["arguments"]["filepath"]
             if starttype < 3:
+                servicename = call["arguments"]["service_name"]
+                servicepath = call["arguments"]["filepath"]
                 self.mark(
                     service_name=servicename,
                     service_path=servicepath,
@@ -95,11 +95,11 @@ class Autorun(Signature):
         elif call["status"]:
             regkey = call["arguments"]["regkey"]
             regvalue = call["arguments"]["value"]
-            in_safelist = False
-            for safelist in self.safelists:
-                if re.match(safelist, regkey, re.IGNORECASE):
-                    in_safelist = True
-                    break
+            in_safelist = any(
+                re.match(safelist, regkey, re.IGNORECASE)
+                for safelist in self.safelists
+            )
+
             if not in_safelist:
                 for indicator in self.regkeys_re:
                     if re.match(indicator, regkey, re.IGNORECASE) and regvalue != "c:\\program files\\java\\jre7\\bin\jp2iexp.dll":

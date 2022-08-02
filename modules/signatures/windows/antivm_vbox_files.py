@@ -52,13 +52,11 @@ class VBoxDetectFiles(Signature):
 
     def on_complete(self):
         for indicator in self.indicators:
-            filepath = self.check_file(pattern=indicator, regex=True)
-            if filepath:
+            if filepath := self.check_file(pattern=indicator, regex=True):
                 self.mark_ioc("file", filepath)
                 continue
 
-            dll = self.check_dll_loaded(pattern=indicator, regex=True)
-            if dll:
+            if dll := self.check_dll_loaded(pattern=indicator, regex=True):
                 self.mark_ioc("dll", dll)
                 continue
 

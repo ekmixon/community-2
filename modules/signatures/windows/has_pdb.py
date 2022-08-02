@@ -10,7 +10,6 @@ class HasPdb(Signature):
     severity = 1
 
     def on_complete(self):
-        pdb_path = self.get_results("static", {}).get("pdb_path")
-        if pdb_path:
+        if pdb_path := self.get_results("static", {}).get("pdb_path"):
             self.mark_ioc("pdb_path", pdb_path)
             return True

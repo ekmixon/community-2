@@ -19,8 +19,9 @@ class InstallsAppInit(Signature):
 
     def on_complete(self):
         for indicator in self.regkeys_re:
-            regkey = self.check_key(pattern=indicator, regex=True, actions=["regkey_written"])
-            if regkey:
+            if regkey := self.check_key(
+                pattern=indicator, regex=True, actions=["regkey_written"]
+            ):
                 self.mark_ioc("registry", regkey)
 
         return self.has_marks()

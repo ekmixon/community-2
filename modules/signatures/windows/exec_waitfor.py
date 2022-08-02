@@ -17,7 +17,6 @@ class ExecWaitFor(Signature):
     def on_complete(self):
         lower = "".join(self.get_command_lines()).lower()
         if "waitfor" in lower:
-            cmd = re.search("waitfor \/t \d+", lower)
-            if cmd:
-                self.mark_ioc("cmd", cmd.group(0))
+            if cmd := re.search("waitfor \/t \d+", lower):
+                self.mark_ioc("cmd", cmd[0])
             return True

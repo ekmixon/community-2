@@ -55,8 +55,11 @@ class NetworkDocumentFile(Signature):
             for pname in self.pname:
                 self.description += pname
         elif len(self.pname) > 1:
-            self.description = "Network communications indicative of a potential document or script payload download was initiated by the processes "
-            self.description += ", ".join(self.pname)
+            self.description = (
+                "Network communications indicative of a potential document or script payload download was initiated by the processes "
+                + ", ".join(self.pname)
+            )
+
         return self.has_marks()
 
 class NetworkEXE(Signature):
@@ -96,8 +99,11 @@ class NetworkEXE(Signature):
             for pname in self.pname:
                 self.description += pname
         elif len(self.pname) > 1:
-            self.description = "An executable file was downloaded by the processes "
-            self.description += ", ".join(self.pname)
+            self.description = (
+                "An executable file was downloaded by the processes "
+                + ", ".join(self.pname)
+            )
+
         return self.has_marks()
 
 class SuspiciousWriteEXE(Signature):
@@ -158,7 +164,7 @@ class SuspiciousWriteEXE(Signature):
                     if filepath not in self.exes:
                         self.exes.append(filepath)
 
-            elif call["api"] == "CreateProcessInternalW" or call["api"] == "ShellExecuteExW":
+            elif call["api"] in ["CreateProcessInternalW", "ShellExecuteExW"]:
                 filepath = call["arguments"]["filepath"]
                 if filepath in self.exes and pname in self.pname:
                     self.executed = True
@@ -166,12 +172,13 @@ class SuspiciousWriteEXE(Signature):
     def on_complete(self):
         if len(self.pname) == 1:
             for pname in self.pname:
-                self.description = "The process %s wrote an executable file to disk" % pname
+                self.description = f"The process {pname} wrote an executable file to disk"
                 if self.executed:
                     self.description += " which it then attempted to execute"
                     self.severity = 6
         elif len(self.pname) > 1:
-            self.description = "The processes %s wrote an executable file to disk" % ", ".join(self.pname)
+            self.description = f'The processes {", ".join(self.pname)} wrote an executable file to disk'
+
             if self.executed:
                 self.description += " which it then attempted to execute"
                 self.severity = 6

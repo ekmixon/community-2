@@ -10,14 +10,17 @@ def enumerate_signatures(dirpath, submodule, g, attributes):
         from cuckoo.common.abstracts import Signature
 
         return enumerate_plugins(
-            dirpath, "signatures.%s" % submodule,
-            g, Signature, attributes
+            dirpath, f"signatures.{submodule}", g, Signature, attributes
         )
+
     except ImportError:
         from lib.cuckoo.core.plugins import enumerate_plugins
         from lib.cuckoo.common.abstracts import Signature
 
         return enumerate_plugins(
-            dirpath, "modules.signatures.%s" % submodule,
-            g, Signature, attributes
+            dirpath,
+            f"modules.signatures.{submodule}",
+            g,
+            Signature,
+            attributes,
         )

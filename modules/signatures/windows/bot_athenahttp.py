@@ -38,8 +38,7 @@ class AthenaHttp(Signature):
 
     def on_complete(self):
         for indicator in self.indicators:
-            mutex = self.check_mutex(pattern=indicator, regex=True)
-            if mutex:
+            if mutex := self.check_mutex(pattern=indicator, regex=True):
                 self.mark_ioc("mutex", mutex)
 
         if self.has_marks(len(self.indicators)):
@@ -47,7 +46,7 @@ class AthenaHttp(Signature):
 
         for http in self.get_net_http():
             if http["method"] == "POST" and "body" in http and \
-                    self.http_body_indicator.search(http["body"]):
+                        self.http_body_indicator.search(http["body"]):
                 self.mark_ioc("http", http)
 
         return self.has_marks(3)

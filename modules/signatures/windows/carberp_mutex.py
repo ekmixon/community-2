@@ -25,7 +25,8 @@ class CarberpMutexes(Signature):
     minimum = "2.0"
 
     def on_complete(self):
-        regkey = self.check_mutex(pattern="^(Global\\\\)?(UAC|INS|BD)NTFS\d+$", regex=True)
-        if regkey:
+        if regkey := self.check_mutex(
+            pattern="^(Global\\\\)?(UAC|INS|BD)NTFS\d+$", regex=True
+        ):
             self.mark_ioc("registry", regkey)
             return True

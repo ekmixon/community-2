@@ -19,8 +19,7 @@ class InstalledApps(Signature):
         keyname = call["arguments"]["regkey"]
         uninstall = "\\microsoft\\windows\\currentversion\\uninstall"
         if (keyname and uninstall in keyname.lower() and keyname.lower().endswith("displayname")):
-            app = call["arguments"]["value"]
-            if app:
+            if app := call["arguments"]["value"]:
                 self.mark_call()
 
     def on_complete(self):

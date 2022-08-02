@@ -60,7 +60,10 @@ class AntiSandboxSleep(Signature):
             if info["attempt"] >= 120000:
                 attempted = info["attempt"] / 1000
                 actual = info["actual"] / 1000
-                self.mark(description="%s tried to sleep %s seconds, actually delayed analysis time by %s seconds" % (process_name, attempted, actual))
+                self.mark(
+                    description=f"{process_name} tried to sleep {attempted} seconds, actually delayed analysis time by {actual} seconds"
+                )
+
 
             if info["attempt"] >= 1200000:
                 self.severity = 3

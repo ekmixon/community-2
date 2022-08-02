@@ -30,7 +30,8 @@ class KnownVirustotal(Signature):
             if positives == 1:
                 self.description = "File has been identified by one AntiVirus engine on VirusTotal as malicious"
             elif positives > 1:
-                self.description = "File has been identified by %s AntiVirus engines on VirusTotal as malicious" % positives
+                self.description = f"File has been identified by {positives} AntiVirus engines on VirusTotal as malicious"
+
                 if positives >= 40:
                     self.severity = 6
                 elif positives >= 30:

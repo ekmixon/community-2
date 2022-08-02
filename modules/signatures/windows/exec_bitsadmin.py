@@ -18,9 +18,8 @@ class ExecBitsAdmin(Signature):
     def on_complete(self):
         lower = "".join(self.get_command_lines()).lower()
         if "bitsadmin" in lower and "/download" in lower:
-            url = re.search(
+            if url := re.search(
                 "bitsadmin .+ \/download .* (http:\/\/[^\s]+)", lower
-            )
-            if url:
-                self.mark_ioc("url", url.group(1))
+            ):
+                self.mark_ioc("url", url[1])
             return True

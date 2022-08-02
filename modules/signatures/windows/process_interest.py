@@ -57,14 +57,12 @@ class ProcessInterest(Signature):
 
     def on_call(self, call, process):
         if call["api"] == "Process32NextW":
-            if not call["status"]:
-                self.lastprocessname = ""
-            else:
-                self.lastprocessname = call["arguments"]["process_name"].lower()
-        else:
-            # is Process32FirstW
-            if self.lastprocessname:
-                self.interested_processes.add(self.lastprocessname)
+            self.lastprocessname = (
+                call["arguments"]["process_name"].lower() if call["status"] else ""
+            )
+
+        elif self.lastprocessname:
+            self.interested_processes.add(self.lastprocessname)
 
     def on_complete(self):
         if self.lastprocessname:

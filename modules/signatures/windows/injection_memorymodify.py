@@ -33,15 +33,18 @@ class InjectionModifiesMemory(Signature):
     ]
 
     def on_call(self, call, process):
-        if call["arguments"]["process_handle"] != "0xffffffff" and call["arguments"]["process_handle"] != "0xffffffffffffffff":
+        if call["arguments"]["process_handle"] not in [
+            "0xffffffff",
+            "0xffffffffffffffff",
+        ]:
             injected_pid = call["arguments"]["process_identifier"]
             call_process = self.get_process_by_pid(injected_pid)
             if not call_process or call_process["ppid"] != process["pid"]:
                 self.mark_ioc(
                     "Process injection",
-                    "Process %s manipulating memory of non-child process %s" % (process["pid"],
-                                                               injected_pid)
+                    f'Process {process["pid"]} manipulating memory of non-child process {injected_pid}',
                 )
+
                 self.mark_call()
 
     def on_complete(self):

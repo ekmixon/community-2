@@ -25,7 +25,6 @@ class Ruskill(Signature):
     minimum = "2.0"
 
     def on_complete(self):
-        mutex = self.check_mutex(pattern="FvLQ49IlzIyLjj6m")
-        if mutex:
+        if mutex := self.check_mutex(pattern="FvLQ49IlzIyLjj6m"):
             self.mark_ioc("mutex", mutex)
             return True

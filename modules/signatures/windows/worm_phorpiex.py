@@ -25,8 +25,7 @@ class Phorpiex(Signature):
 
     def on_complete(self):
         for indicator in self.mutexes_re:
-            mutex = self.check_mutex(pattern=indicator, regex=True)
-            if mutex:
+            if mutex := self.check_mutex(pattern=indicator, regex=True):
                 self.mark_ioc("mutex", mutex)
 
         return self.has_marks()

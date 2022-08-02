@@ -34,10 +34,18 @@ class ADS(Signature):
             if len(filepath) <= 3:
                 continue
 
-            if ":" in filepath.split("\\")[-1]:
-                if not filepath.lower().startswith("c:\\dosdevices\\") and not filepath[-1] == ":":
-                    # we have a different signature to deal with removal of Zone.Identifier
-                    if not filepath.startswith("\\??\\http://") and not filepath.endswith(":Zone.Identifier") and not re.match(r'^[A-Z]?:\\(Users|Documents and Settings)\\[^\\]+\\Favorites\\Links\\Suggested Sites\.url:favicon$', filepath, re.IGNORECASE):
-                        self.mark_ioc("file", filepath)
+            if (
+                ":" in filepath.split("\\")[-1]
+                and not filepath.lower().startswith("c:\\dosdevices\\")
+                and filepath[-1] != ":"
+                and not filepath.startswith("\\??\\http://")
+                and not filepath.endswith(":Zone.Identifier")
+                and not re.match(
+                    r'^[A-Z]?:\\(Users|Documents and Settings)\\[^\\]+\\Favorites\\Links\\Suggested Sites\.url:favicon$',
+                    filepath,
+                    re.IGNORECASE,
+                )
+            ):
+                self.mark_ioc("file", filepath)
 
         return self.has_marks()

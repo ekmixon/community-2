@@ -20,8 +20,7 @@ class Netwire(Signature):
 
     def on_complete(self):
         for key in self.regkeys:
-            match = self.check_key(pattern=key)
-            if match:
+            if match := self.check_key(pattern=key):
                 self.mark_ioc("regkey", match)
 
         return self.has_marks()

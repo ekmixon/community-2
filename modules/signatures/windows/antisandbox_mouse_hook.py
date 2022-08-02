@@ -26,7 +26,9 @@ class HookMouse(Signature):
     filter_apinames = "SetWindowsHookExA", "SetWindowsHookExW"
 
     def on_call(self, call, process):
-        if call["arguments"]["hook_identifier"] in [7, 14]:
-            if not call["arguments"]["thread_identifier"]:
-                self.mark_call()
-                return True
+        if (
+            call["arguments"]["hook_identifier"] in [7, 14]
+            and not call["arguments"]["thread_identifier"]
+        ):
+            self.mark_call()
+            return True

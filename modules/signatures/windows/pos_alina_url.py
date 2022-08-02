@@ -21,7 +21,6 @@ class AlineURL(Signature):
 
     def on_complete(self):
         for indicator in self.urls_re:
-            match = self.check_url(pattern=indicator, regex=True)
-            if match:
+            if match := self.check_url(pattern=indicator, regex=True):
                 self.data.append({"url": match})
                 return True

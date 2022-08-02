@@ -37,24 +37,21 @@ class Recon_Beacon(Signature):
 
     def on_call(self, call, process):
         # Here we check for interesting bits of data which may be queried and used in cnc for computer identification
-        if call["api"] == "GetComputerNameA" or call["api"] == "GetComputerNameW":
+        if call["api"] in ["GetComputerNameA", "GetComputerNameW"]:
             if "computer_name" not in call["arguments"]:
                 return
 
-            compname = call["arguments"]["computer_name"]
-            if compname:
+            if compname := call["arguments"]["computer_name"]:
                 self.computerdetails.append(compname)
 
-        elif call["api"] == "GetUserNameA" or call["api"] == "GetUserNameW":
+        elif call["api"] in ["GetUserNameA", "GetUserNameW"]:
             if "user_name" not in call["arguments"]:
                 return
 
-            compname = call["arguments"]["user_name"]
-            if compname:
+            if compname := call["arguments"]["user_name"]:
                 self.computerdetails.append(compname)
 
-        # Here we check for the interesting data appearing in buffers from network calls for CnC
-        elif call["api"] == "HttpSendRequestA" or call["api"] == "HttpSendRequestW":
+        elif call["api"] in ["HttpSendRequestA", "HttpSendRequestW"]:
             if "post_data" not in call["arguments"]:
                 return
 
@@ -63,7 +60,7 @@ class Recon_Beacon(Signature):
                 if compdetails in buff:
                     self.mark_call()
 
-        elif call["api"] == "HttpOpenRequestA" or call["api"] == "HttpOpenRequestW":
+        elif call["api"] in ["HttpOpenRequestA", "HttpOpenRequestW"]:
             if "path" not in call["arguments"]:
                 return
 
@@ -72,7 +69,7 @@ class Recon_Beacon(Signature):
                 if compdetails in buff:
                     self.mark_call()
 
-        elif call["api"] == "InternetCrackUrlW" or call["api"] == "InternetCrackUrlW":
+        elif call["api"] == "InternetCrackUrlW":
             if "url" not in call["arguments"]:
                 return
 
@@ -87,7 +84,6 @@ class Recon_Beacon(Signature):
                 if compdetails in buff:
                     self.mark_call()
 
-        # Here we check API calls which may be used for obfuscating data prior to CnC
         elif call["api"] == "CryptHashData" and "buffer" in call["arguments"]:
             buff = call["arguments"]["buffer"]
             for compdetails in self.computerdetails:

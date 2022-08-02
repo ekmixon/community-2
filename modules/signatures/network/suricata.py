@@ -60,20 +60,20 @@ class SuricataAlert(Signature):
 
             # Extract text between parentheses.
             reg_type = re.search("\\(([A-Za-z0-9_]+)\\)", alert["signature"])
-            reg_type = reg_type.group(1) if reg_type else None
+            reg_type = reg_type[1] if reg_type else None
 
             family = self.extract_family(alert["signature"])
             if not family:
                 continue
 
-            self.mark_config({
-                "family": family.title(),
-                "cnc": "%s://%s:%s" % (
-                    protocols.get(alert["dst_port"], "tcp"),
-                    alert["dst_ip"], alert["dst_port"]
-                ),
-                "type": reg_type,
-            })
+            self.mark_config(
+                {
+                    "family": family.title(),
+                    "cnc": f'{protocols.get(alert["dst_port"], "tcp")}://{alert["dst_ip"]}:{alert["dst_port"]}',
+                    "type": reg_type,
+                }
+            )
+
 
             self.mark_ioc("suricata", alert["signature"])
             alerts.append(alert["signature"])

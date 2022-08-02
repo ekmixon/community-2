@@ -21,7 +21,7 @@ class AntiAVServiceStop(Signature):
 
     def __init__(self, *args, **kwargs):
         Signature.__init__(self, *args, **kwargs)
-        self.handles = dict()
+        self.handles = {}
         self.lastprocess = 0
         self.stoppedservices = []
 
@@ -29,10 +29,10 @@ class AntiAVServiceStop(Signature):
 
     def on_call(self, call, process):
         if process is not self.lastprocess:
-            self.handles = dict()
+            self.handles = {}
             self.lastprocess = process
 
-        if (call["api"] == "OpenServiceA" or call["api"] == "OpenServiceW") and call["status"]:
+        if call["api"] in ["OpenServiceA", "OpenServiceW"] and call["status"]:
             handle = call["arguments"]["service_handle"]
             self.handles[handle] = call["arguments"]["service_name"]
         elif call["api"] == "ControlService":

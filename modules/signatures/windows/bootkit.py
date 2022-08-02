@@ -19,7 +19,7 @@ class Bootkit(Signature):
     def __init__(self, *args, **kwargs):
         Signature.__init__(self, *args, **kwargs)
         self.lastprocess = 0
-        self.handles = dict()
+        self.handles = {}
         self.saw_stealth = False
         self.bootkit = False
 
@@ -27,12 +27,11 @@ class Bootkit(Signature):
 
     def on_call(self, call, process):
         if process is not self.lastprocess:
-            self.handles = dict()
+            self.handles = {}
             self.lastprocess = process
 
         if call["api"] == "NtDuplicateObject" and call["status"]:
-            tgtarg = call["arguments"]["target_handle"]
-            if tgtarg:
+            if tgtarg := call["arguments"]["target_handle"]:
                 srchandle = int(call["arguments"]["source_handle"], 16)
                 tgthandle = tgtarg
                 if srchandle in self.handles:
@@ -40,16 +39,26 @@ class Bootkit(Signature):
         elif call["api"] == "NtClose":
             handle = int(call["arguments"]["handle"], 16)
             self.handles.pop(handle, None)
-        elif (call["api"] == "NtCreateFile" or call["api"] == "NtOpenFile") and call["status"]:
+        elif call["api"] in ["NtCreateFile", "NtOpenFile"] and call["status"]:
             filename = call["arguments"]["filepath"]
             handle = int(call["arguments"]["file_handle"], 16)
             access = int(call["arguments"]["desired_access"], 16)
             # FILE_WRITE_ACCESS or GENERIC_WRITE
-            if filename and (filename.lower() == "\\??\\physicaldrive0" or filename.lower().startswith("\\device\\harddisk")) and access & 0x40000002:
-                if handle not in self.handles:
-                    self.handles[handle] = filename
-                    self.mark_call()
-        elif (call["api"] == "DeviceIoControl" or call["api"] == "NtDeviceIoControlFile") and call["status"]:
+            if (
+                filename
+                and (
+                    filename.lower() == "\\??\\physicaldrive0"
+                    or filename.lower().startswith("\\device\\harddisk")
+                )
+                and access & 0x40000002
+                and handle not in self.handles
+            ):
+                self.handles[handle] = filename
+                self.mark_call()
+        elif (
+            call["api"] in ["DeviceIoControl", "NtDeviceIoControlFile"]
+            and call["status"]
+        ):
             ioctl = call["flags"]["control_code"]
             if call["api"] == "DeviceIoControl":
                 handle = int(call["arguments"]["device_handle"], 16)

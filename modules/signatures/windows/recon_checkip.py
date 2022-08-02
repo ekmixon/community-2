@@ -73,8 +73,7 @@ class CheckIP(Signature):
 
     def on_complete(self):
         for indicator in self.domains:
-            domain = self.check_domain(pattern=indicator)
-            if domain:
+            if domain := self.check_domain(pattern=indicator):
                 self.mark_ioc("domain", domain)
 
         return self.has_marks()

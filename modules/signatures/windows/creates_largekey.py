@@ -40,8 +40,7 @@ class CreatesLargeKey(Signature):
 
     def on_call(self, call, process):
         if call["status"]:
-            vallen = sys.getsizeof(call["arguments"]["value"])
-            if vallen:
+            if vallen := sys.getsizeof(call["arguments"]["value"]):
                 length = int(vallen)
                 if length > 16 * 1024:
                     for safelist in self.safelist:

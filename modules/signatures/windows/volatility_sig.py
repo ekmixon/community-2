@@ -14,11 +14,10 @@ class VolMalfind1(Signature):
     ttp = ["T1055"]
 
     def on_complete(self):
-        pids = set()
-        for row in self.get_volatility("malfind").get("data", []):
-            pids.add(row["process_id"])
-
-        if pids:
+        if pids := {
+            row["process_id"]
+            for row in self.get_volatility("malfind").get("data", [])
+        }:
             self.mark_vol("malfind", pidcount=len(pids))
 
         return self.has_marks()
@@ -38,9 +37,12 @@ class VolLdrModules1(Signature):
         exceptions = ["csrss.exe"]
 
         for row in self.get_volatility("ldrmodules").get("data", []):
-            if not row["dll_in_init"] and not row["dll_in_load"] and \
-                    not row["dll_in_mem"] and \
-                    not row["process_name"].lower() in exceptions:
+            if (
+                not row["dll_in_init"]
+                and not row["dll_in_load"]
+                and not row["dll_in_mem"]
+                and row["process_name"].lower() not in exceptions
+            ):
                 self.mark_vol("unlinked", dll=row)
 
         return self.has_marks()
